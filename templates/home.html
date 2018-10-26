@@ -1,0 +1,187 @@
+<!-- home.html -->
+{% load staticfiles %}
+<html>
+   <head>
+   	<style>
+   		#logo{
+   			width: 50px;
+   			height: 50px;
+   		}
+
+   		#link_logo{
+   			padding-left: 10px;
+   			padding-top: 8px;
+   		}
+   		#heading{
+   			font-size: 30px;
+   			margin: 550px !important;   
+   			}
+
+   </style>
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!-- Compiled and minified CSS -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+      <!-- Compiled and minified JavaScript -->
+   </head>
+   <body>
+   	  <div class="navbar-fixed">
+
+    <nav>
+      <div class="nav-wrapper light-blue accent-4">
+        <a href="/" id="link_logo" class="brand-logo"><img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/JSON_vector_logo.svg/768px-JSON_vector_logo.svg.png"></a>
+       <span id="heading">Notification Push</span>
+      </div>
+    </nav>
+  </div>
+      <div class="container">
+      	
+         <div class="row">
+            <form class=" container col s12" enctype="multipart/form-data" >
+              
+               	
+                  <div class="row">
+                     <div class="input-field col s6 offset-s2 offset-s2 offset-s2">
+                        <i class="material-icons prefix">title</i>
+                        <input id="title" type="text" data-length="50">
+                        <label for="title">Title</label>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="row">
+                        <div class="input-field col s6 offset-s2 offset-s2">
+                           <i class="material-icons prefix">description</i>
+                           <textarea id="description" class="materialize-textarea" data-length="500"></textarea>
+                           <label for="description">Textarea</label>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="input-field col s6 offset-s2 offset-s2">
+                           <i class="material-icons prefix">link</i>
+                           <input id="link" type="text" data-length= "250">
+                           <label for="link">Link</label>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="input-field col s6 offset-s2 offset-s2">
+                           <select name="select" id="select">
+                            {% for user in users %}
+                              <option value="" disabled selected>Choose your option</option>
+                              <option value="{{user.id}}">{{user.username}}</option>
+                              {% endfor %}
+                           </select>
+                           <label>Materialize Select</label>
+                        </div>
+                     </div>
+                     <div class="row col s6 offset-s2">
+                        <label>
+                        <input id="all" type="checkbox" class="filled-in" />
+                        <span>Send notification to all the users</span>
+                        </label>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <button type="button" id="submit" class="btn waves-effect waves-light col s4 offset-s2 light-blue accent-4">Submit
+                     <i class="material-icons right">send</i>
+                     </button>
+                  </div>
+               
+            </form>
+         </div>
+      </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
+      <script>
+         $(document).ready(function() {
+            $('input#input_text, textarea#textarea2').characterCounter();
+             $('select').formSelect();
+             function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+  //CSRF token
+    var csrftoken = getCookie('csrftoken');
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+  //adding csrf to every request header X-CSRFToken header
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+             $('#submit').on('click', ()=>{
+
+              var data = {
+            title : $('#title').val(),
+            description: $('#description').val(),
+            link: $('#link').val(),
+            user: $('#select').val()
+
+          }
+          if ($('#all').is(":checked"))
+            data.all = true
+          else
+            data.all = false
+          
+             console.log(data)
+             $.ajax({
+              type: "POST",
+              url : "/notification/send/",
+              data:data,
+              success : (data) => {
+                console.log(data)
+              }
+             });
+             });
+          });
+      </script>
+      <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  // TODO: Replace with your project's customized code snippet
+  var config = {
+    apiKey: "AIzaSyByMDs3kFccz6ANHE2hfdqJDTbKHCt29hE",
+    authDomain: "notifyme-0309.firebaseapp.com",
+    //databaseURL: "https://<DATABASE_NAME>.firebaseio.com",
+    projectId: "notifyme-0309",
+    messagingSenderId: "258655984634",
+  };
+  firebase.initializeApp(config);
+  const messaging = firebase.messaging();
+  messaging.usePublicVapidKey("BGe1eM8m3xFJg0cQCPIFVeW361Fdnjkoo9La3LtDbHkVpJ5woHoKJfjelh4JQyJB03cdp6alRb5vrdo8xMKO7bg");
+  messaging.requestPermission().then(function() {
+  console.log('Notification permission granted.');
+  return messaging.getToken();
+  
+})
+  .then(function(token){
+    console.log(token)
+    console.log('{{user}}')
+  })
+  .catch(function(err) {
+  console.log('Unable to get permission to notify.', err);
+});
+messaging.onMessage(function(payload) {
+  console.log('Message received. ', payload);
+  // ...
+});
+
+
+</script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+   </body>
+</html>

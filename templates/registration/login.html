@@ -1,0 +1,23 @@
+<!-- login.html -->
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block head %}Login{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+<div class="login">
+    <h1 id="login_heading">Login</h1>
+    <form class="form" method="post" action="." >{% csrf_token %}
+        
+        <input type="text" placeholder="Username" name="username" class='usrnme'>
+        <input type="password" placeholder="Password" name="password">
+        <button type="submit"  value="Login" id="login-button">Login</button>
+        <p class="p_r">Havn't registered yet? <a href="{%url 'register'%}">register</a></p>
+        <!--<button type="button" onclick="window.location.href='/register/' " id=register_btn>Register</button>-->
+        <input type="hidden" name="next" value="/home" />
+    </form>
+</div>
+{% endblock %}

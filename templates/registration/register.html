@@ -1,0 +1,31 @@
+<!-- register.html -->
+{% extends "base.html" %}
+{% block title %}User Registration{% endblock %}
+
+{% block image %}
+<p id="welcome_p">
+	<h1 id="welcome">Welcome To My App</h1><br/>
+	<h2 id="sub_welcome">Start Your Growth Journey Today</h2>
+</p>	
+<img src="https://www.irishtimes.com/polopoly_fs/1.3119279.1497540742!/image/image.jpg_gen/derivatives/box_620_330/image.jpg">
+
+{% endblock %}
+{% block content %}
+
+{% load socialaccount %}
+<div id="s_u_m">
+	<p>Sign Up</p>
+</div>	
+    <form method="post" action=".">
+    	{% csrf_token %}
+        
+            {{ form.as_p }}
+        
+        <button type="submit" value="Register" id="register_button">Register</button>
+    </form>
+
+    
+     <p class="p_">Already Have An Account? <a href="{%url 'login'%}">login</a></p>
+   
+</div>
+{% endblock %}
